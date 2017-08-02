@@ -14,7 +14,7 @@ const multerObj = multer({dest:'upload'});
 app.use(multerObj.any());
 app.use(cookieParser());
 
-app.use(express.static('www'));
+app.use(express.static('public'));
 
 app.get('/process_get',function(req,res){
   res.send(JSON.stringify(req.query));
@@ -36,7 +36,7 @@ app.post('/file_upload',function(req,res) {
 })
 
 app.use(function(req, res, next) {
-  fs.readFile(__dirname + '/www/index.html', function(err, data){
+  fs.readFile(__dirname + '/public/index.html', function(err, data){
     if(err){
       console.log(err);
       res.send('404');
