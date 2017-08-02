@@ -1,5 +1,5 @@
 import React,{Component} from "react";
-export default class PeopleCenter extends Component{
+export default class pageManage extends Component{
   render(){
     return (
       <div>
