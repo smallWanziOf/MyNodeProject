@@ -6,25 +6,110 @@ var multer = require('multer');
 var fs = require('fs');
 var path = require("path");
 var cookieParser = require("cookie-parser");
-var birds = require('./router');
+var router = express.Router();
+var mysql = require("mysql");
 
-const urlencodedParser = bodyParser.urlencoded({extended:false})
+/**
+ * 创建一个连接池链接mysql
+ */
+var db = mysql.createPool({
+  host            : 'localhost',
+  user            : 'root',
+  password        : '',
+  database        : 'blog'
+})
+
+/**
+ * 解析POST数据
+ * create application/json parser
+ * create application/x-www-form-urlencoded parser
+ */
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+/**
+ * 上传文件的类型及存放的路径
+ */
 const multerObj = multer({dest:'upload'});
-
 app.use(multerObj.any());
+
+/**
+ * 解析Cookie
+ */
 app.use(cookieParser());
 
-app.use(express.static('public'));
-
-app.get('/process_get',function(req,res){
-  res.send(JSON.stringify(req.query));
+/**
+ * 设置跨域的请求
+ */
+app.all('*', function(req, res, next) {
+  //res.header("Access-Control-Allow-Credentials","true");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeil");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.header("X-Powered-By",' 3.2.1');
+  res.header("Content-Type", "application/json;charset=utf-8");
+  if (req.method == 'OPTIONS') {
+    res.sendStatus(200); /让options请求快速返回/
+  }
+  else {
+    next();
+  }
+  }
+)
+/**
+ * 获取添加新模块的数据接口
+ */
+app.post('/method/addModule',function(req,res){
+  var item = req.body.menu;
+  var child = req.body.child;
+  var sub = req.body.sub;
+  var subPath = req.body.path;
+  db.query(`SELECT * FROM menu_item WHERE item='${item}'`,(error,data)=>{
+    if(error) throw error;
+    if(data.length<1){
+      db.query(`INSERT INTO menu_item (item,child) VALUES ('${item}','${child}')`,(error,data1)=>{
+        if(error) throw error;
+        if(child){
+          db.query(`INSERT INTO sub_menu_item (parent,item,path) VALUES ('${item}','${sub}','${subPath}')`,(error,data2)=>{
+            if(error) throw error;
+            res.send(JSON.stringify({code:'S'}));
+          })
+        }else{
+          res.send(JSON.stringify({code:'S'}));
+        }
+      })
+    }else{
+      res.send(JSON.stringify({code:'E',data:"主模块已存在请勿重复添加!"}))
+    }
+  })
 })
 
-app.post('/process_post',urlencodedParser,function(req,res){
-  console.log(req.body)
-  res.send(JSON.stringify(req.body))
+/**
+ * 获取主页面目录的接口
+ */
+app.get('/method/getMenuList',(req,res)=>{
+  db.query(`SELECT * FROM menu_item`,(error,data)=>{
+    if(error) throw error;
+    db.query(`SELECT * FROM sub_menu_item`,(error,subData)=>{
+      if(error) throw error;
+      data.map(item=>{
+        if(item.child == "true"){
+          item.child = []
+          subData.map(subItem=>{
+            if(item.item == subItem.parent){
+              item.child.push(subItem)
+            }
+          })
+        }
+      })
+      res.send(JSON.stringify(data))
+    })
+  })
 })
 
+/**
+ * 文件上传的接口
+ */
 app.post('/file_upload',function(req,res) {
   var newName = req.files[0].filename + path.parse(req.files[0].originalname).ext;
   console.log( req.files[0])
@@ -35,6 +120,10 @@ app.post('/file_upload',function(req,res) {
   });
 })
 
+/**
+ * 针对路由地址刷新报错的情况
+ */
+app.use(express.static('public'));
 app.use(function(req, res, next) {
   fs.readFile(__dirname + '/public/index.html', function(err, data){
     if(err){
@@ -50,6 +139,9 @@ app.use(function(req, res, next) {
   })
 });
 
+/**
+ * 启动服务监听8010端口
+ */
 var server = app.listen(8081, function () {
   var host = server.address().address
   var port = server.address().port

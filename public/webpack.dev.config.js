@@ -10,7 +10,7 @@ module.exports = {
   output:{
     filename:'[name].js',
     path:path.resolve(__dirname,'dist'),
-    //publicPath: '/dist/'
+    publicPath: '/'
   },
   module:{
     rules:[
@@ -39,10 +39,10 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(), // 启用 HMR
   ],
-  /*devServer:{
+  devServer:{
     hot:true,
     compress: true,
-    contentBase:path.resolve(__dirname,'dist'),
+    contentBase:path.resolve(__dirname),
     publicPath:'/'
-  }*/
+  }
 }

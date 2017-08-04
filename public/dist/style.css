@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+}
+.tang-header-drawer {
+  z-index: 1 !important;
+  padding-top: 64px;
+  overflow: hidden !important;
+}
+.tang-sub-item {
+  padding-left: 60px !important;
+}
+.tang-reast-a {
+  display: block;
+  text-decoration: none;
+}
+#AddModule .tang-addmodule-form {
+  display: flex;
+  align-items: center;
+}
+#AddModule .tang-addmodule-form > div {
+  flex: 1;
+}
+#AddModule .tang-addmodule-btn {
+  float: right;
+}
+#AddModule .tang-addmodule-btn > div {
+  margin-right: 20px !important;
+  margin-top: 20px !important;
+}
+
+/*# sourceMappingURL=style.css.map*/
