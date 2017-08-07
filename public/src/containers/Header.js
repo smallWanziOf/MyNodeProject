@@ -24,7 +24,6 @@ export default class Header extends Component{
     })
     .then(res=>{return res.json()})
     .then(data=>{
-      console.log(data)
       this.setState({
         dataItem:data,
       })
@@ -35,7 +34,6 @@ export default class Header extends Component{
   }
 
   handleLogin = () => {
-    console.log(this)
     this.setState({
       dialogOpen:true,
     })
@@ -86,7 +84,7 @@ export default class Header extends Component{
         <Drawer open={this.state.drawerOpen} containerClassName="tang-header-drawer">
           {
             dataItem?
-            dataItem.data.map((item,i)=>{
+            dataItem.map((item,i)=>{
               if(Array.isArray(item.child)){
                 return (
                   <Menu onChange={this.itemClick} key={i}>
@@ -96,11 +94,10 @@ export default class Header extends Component{
                       } 
                       value={i}
                     />
-
                     {
                       item.child.map((subItem,s)=>{
                         return (
-                          (this.state.itemOptenKey == 0)&&
+                          (this.state.itemOptenKey == i)&&
                           <Link className="tang-reast-a" to={subItem.path} key={s}>
                             <ListItem className="tang-sub-item">{subItem.item}</ListItem>
                           </Link>
@@ -125,64 +122,7 @@ export default class Header extends Component{
             :
             ''
           }
-           {/* <MenuItem primaryText="前端开发"
-              rightIcon={
-                <FontIcon className={(this.state.itemOptenKey == 0)?"fa fa-angle-down":"fa fa-angle-up"} style={{right: '30px'}}></FontIcon>
-              } 
-              value={0}
-            />
-            {
-              (this.state.itemOptenKey == 0)&&
-              <div>
-                <ListItem className="tang-sub-item">HTML</ListItem>
-                <ListItem className="tang-sub-item">CSS</ListItem>
-                <ListItem className="tang-sub-item">JavaScript</ListItem>
-              </div>
-            }
-            <MenuItem primaryText="后端开发" 
-              rightIcon={
-                <FontIcon className={(this.state.itemOptenKey == 1)?"fa fa-angle-down":"fa fa-angle-up"} style={{right: '30px'}}></FontIcon>
-              }
-              value={1}
-            />
-            {
-              (this.state.itemOptenKey == 1)&&
-              <div>
-                <ListItem className="tang-sub-item">HTML</ListItem>
-                <ListItem className="tang-sub-item">CSS</ListItem>
-                <ListItem className="tang-sub-item">JavaScript</ListItem>
-              </div>
-            }
-            <MenuItem primaryText="开发工具" 
-              rightIcon={<FontIcon className="fa fa-angle-down" style={{right: '30px'}}></FontIcon>}
-              value={2}
-            />
-            <ListItem className="tang-sub-item">Webpack</ListItem>
-            <ListItem className="tang-sub-item">Gulp</ListItem>
-            <MenuItem primaryText="服务器" 
-              rightIcon={<FontIcon className="fa fa-angle-down" style={{right: '30px'}}></FontIcon>}
-              value={3}
-            />
-            <ListItem className="tang-sub-item">Nginx</ListItem>
-            <MenuItem primaryText="学习计划" 
-              rightIcon={<FontIcon className="fa fa-angle-down" style={{right: '30px'}}></FontIcon>}
-              value={4}
-            />
-            <ListItem className="tang-sub-item">Nginx</ListItem>
-            */}
-          <Menu>
-            <MenuItem primaryText="页面管理" 
-              rightIcon={<FontIcon className="fa fa-angle-down" style={{right: '30px'}}></FontIcon>}
-              value={5}
-            >
-            </MenuItem>
-            <Link className="tang-reast-a" to="/addModule">
-              <ListItem className="tang-sub-item">新增模块</ListItem>
-            </Link>
-            <Link className="tang-reast-a" to="/changeTheme">
-              <ListItem className="tang-sub-item">更换主题</ListItem>
-            </Link>
-          </Menu>
+
         </Drawer>
       </header>
     )
