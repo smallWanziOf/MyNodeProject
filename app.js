@@ -8,7 +8,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var router = express.Router();
 var mysql = require("mysql");
-
+var a = 1;
 /**
  * 创建一个连接池链接mysql
  */
@@ -42,6 +42,7 @@ app.use(cookieParser());
  * 设置跨域的请求
  */
 app.all('*', function(req, res, next) {
+  console.log(a++);
   //res.header("Access-Control-Allow-Credentials","true");
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeil");
@@ -50,12 +51,11 @@ app.all('*', function(req, res, next) {
   res.header("Content-Type", "application/json;charset=utf-8");
   if (req.method == 'OPTIONS') {
     res.sendStatus(200); /让options请求快速返回/
-  }
-  else {
+  }else {
     next();
   }
-  }
-)
+})
+
 /**
  * 获取添加新模块的数据接口
  */
@@ -106,6 +106,397 @@ app.get('/method/getMenuList',(req,res)=>{
     })
   })
 })
+
+/**
+ * 获取当前选择主目录下的子目录
+ */
+app.get('/method/getSubList',(req,res)=>{
+  db.query(`SELECT * FROM sub_menu_item WHERE parent='${req.query.parent}'`,(error,data)=>{
+    if(error) throw error;
+    res.send(JSON.stringify(data))
+  })
+})
+
+/**
+ * 提交修改或是添加的子目录
+ */
+app.post('/method/submitSubItem',(req,res)=>{
+  let {parent,item,subPath} = req.body;
+  if(req.query.id<0){
+    db.query(`INSERT INTO sub_menu_item (parent,item,path) VALUES ('${parent}','${item}','${subPath}')`,(error,data)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      } 
+      res.send(JSON.stringify({code:'S'}));
+    })
+  }else{
+    db.query(`UPDATE sub_menu_item SET item='${item}',path='${subPath}' WHERE ID=${req.query.id}`,(error,data)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }
+      res.send(JSON.stringify({code:'S'}));
+    })
+  }
+})
+
+/**
+ * 删除父目录
+ */
+app.post('/method/deleteParent',(req,res)=>{
+  db.query(`DELETE FROM menu_item WHERE ID=${req.body.parentID}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:'E',msg:error}));
+      res.end();
+      return false;
+    }else{
+      db.query(`DELETE FROM sub_menu_item WHERE parent='${req.body.parentName}'`,(error,data)=>{
+        if(error){
+          res.send(JSON.stringify({code:'E',msg:error}));
+          res.end();
+          return false;
+        }else{
+          res.send(JSON.stringify({code:'S'}));
+          res.end();
+        }
+      })
+    }
+  })
+})
+
+/**
+ * 删除一行子目录
+ */
+app.post('/method/deleteSubLine',(req,res)=>{
+  if(req.query.id!='undefinde'){
+    db.query(`DELETE FROM sub_menu_item WHERE ID=${req.query.id}`,(error,data)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }else{
+        res.send(JSON.stringify({code:'S'}));
+        res.end();
+      }
+    })
+  }
+})
+
+/**
+ * 发表新的html文章
+ */
+app.post('/method/publishHtmlArticle',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  db.query(`INSERT INTO article_html (title,summary,author,articleDate,article) VALUES ('${title}','${summary}','${author}','${articleDate}','${article}')`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ *获取所有发表的HTML文章 
+ */
+app.get('/method/queryHtmlArticle',(req,res)=>{
+  let page = req.query.page;
+  if(page<=0){
+    res.send(JSON.stringify({code:'S',data:[],total:0}));
+    return false;
+  }else{
+    db.query(`SELECT COUNT(ID) AS total FROM article_html`,(error,data1)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }else{
+        db.query(`SELECT ID,title,summary,author,articleDate FROM article_html ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
+          if(error){
+            res.send(JSON.stringify({code:'E',msg:error}));
+            res.end();
+            return false;
+          }else{
+            res.send(JSON.stringify({code:"S",data:data2,total:data1[0].total}));
+            return false;
+          }
+        })
+      }
+    })
+  }
+})
+
+/**
+ * 通过ID查询单片文章进行编辑文章的操作
+ */
+app.get('/method/queryHtmlAtticleFromId',(req,res)=>{
+  let id = req.query.id;
+  db.query(`SELECT * FROM article_html WHERE ID = ${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:'E',msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S',data:data}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过Id修改HTMl文章
+ */
+app.post('/method/EditHtmlArticleFromId',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  let id = req.query.id;
+  db.query(`UPDATE article_html SET title='${title}',summary='${summary}',author='${author}',articleDate='${articleDate}',article='${article}' WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过ID删除一篇文章
+ */
+app.get('/method/deleteHtmlArticle',(req,res)=>{
+  let id = req.query.id;
+  db.query(`DELETE FROM article_html WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+
+/**
+ * 发表新的css文章
+ */
+app.post('/method/publishCssArticle',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  db.query(`INSERT INTO article_css (title,summary,author,articleDate,article) VALUES ('${title}','${summary}','${author}','${articleDate}','${article}')`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ *获取所有发表的css文章 
+ */
+app.get('/method/queryCssArticle',(req,res)=>{
+  let page = req.query.page;
+  if(page<=0){
+    res.send(JSON.stringify({code:'S',data:[],total:0}));
+    return false;
+  }else{
+    db.query(`SELECT COUNT(ID) AS total FROM article_css`,(error,data1)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }else{
+        db.query(`SELECT ID,title,summary,author,articleDate FROM article_css ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
+          if(error){
+            res.send(JSON.stringify({code:'E',msg:error}));
+            res.end();
+            return false;
+          }else{
+            res.send(JSON.stringify({code:"S",data:data2,total:data1[0].total}));
+            return false;
+          }
+        })
+      }
+    })
+  }
+})
+
+/**
+ * 通过ID查询单片文章进行编辑文章的操作
+ */
+app.get('/method/queryCssAtticleFromId',(req,res)=>{
+  let id = req.query.id;
+  db.query(`SELECT * FROM article_css WHERE ID = ${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:'E',msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S',data:data}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过Id修改HTMl文章
+ */
+app.post('/method/EditCssArticleFromId',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  let id = req.query.id;
+  db.query(`UPDATE article_css SET title='${title}',summary='${summary}',author='${author}',articleDate='${articleDate}',article='${article}' WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过ID删除一篇文章
+ */
+app.get('/method/deleteCssArticle',(req,res)=>{
+  let id = req.query.id;
+  db.query(`DELETE FROM article_css WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+
+/**
+ * 发表新的js文章
+ */
+app.post('/method/publishJsArticle',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  db.query(`INSERT INTO article_js (title,summary,author,articleDate,article) VALUES ('${title}','${summary}','${author}','${articleDate}','${article}')`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ *获取所有发表的css文章 
+ */
+app.get('/method/queryJsArticle',(req,res)=>{
+  let page = req.query.page;
+  if(page<=0){
+    res.send(JSON.stringify({code:'S',data:[],total:0}));
+    return false;
+  }else{
+    db.query(`SELECT COUNT(ID) AS total FROM article_js`,(error,data1)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }else{
+        db.query(`SELECT ID,title,summary,author,articleDate FROM article_js ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
+          if(error){
+            res.send(JSON.stringify({code:'E',msg:error}));
+            res.end();
+            return false;
+          }else{
+            res.send(JSON.stringify({code:"S",data:data2,total:data1[0].total}));
+            return false;
+          }
+        })
+      }
+    })
+  }
+})
+
+/**
+ * 通过ID查询单片文章进行编辑文章的操作
+ */
+app.get('/method/queryJsAtticleFromId',(req,res)=>{
+  let id = req.query.id;
+  db.query(`SELECT * FROM article_js WHERE ID = ${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:'E',msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S',data:data}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过Id修改HTMl文章
+ */
+app.post('/method/EditJsArticleFromId',(req,res)=>{
+  let {title,summary,author,articleDate,article} = req.body;
+  let id = req.query.id;
+  db.query(`UPDATE article_js SET title='${title}',summary='${summary}',author='${author}',articleDate='${articleDate}',article='${article}' WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+/**
+ * 通过ID删除一篇文章
+ */
+app.get('/method/deleteJsArticle',(req,res)=>{
+  let id = req.query.id;
+  db.query(`DELETE FROM article_js WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
+
+
 
 /**
  * 文件上传的接口

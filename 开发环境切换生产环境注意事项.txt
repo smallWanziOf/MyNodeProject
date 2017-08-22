@@ -1,3 +1,4 @@
 1.idnex.html页面的style样式必须要引入
 2.index.html页面打包文件的地址引入切换
 3.index.js页面<HashRouter>切换成<BrowserRouter>
+4.app.js关于跨域请求处理逻辑需要注释否则返回json类型

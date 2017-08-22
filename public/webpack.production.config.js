@@ -57,8 +57,11 @@ module.exports = {
     new ExtractTextPlugin("style.css"),
     new UglifyJSPlugin({
       compress: {
-        warnings: false
-      }
+        warnings: false,
+        drop_console:true,
+        pure_funcs:['console.log']
+      },
+      sourceMap:false
     }),
     new webpack.DefinePlugin({
       'process.env': {

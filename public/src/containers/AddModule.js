@@ -60,14 +60,12 @@ export default class AddModule extends Component{
     if(!mainModuleValue){
       error+="模块名称不能为空 "
     }
-    if(subDisabled){
       if(!subModuleValue){
         error+="子模块名称不能为空 "
       }
       if(!subModulePath){
         error+="子模块链接地址不能为空"
       }
-    }
     if(error){
       this.setState({
         open:true,
@@ -103,8 +101,11 @@ export default class AddModule extends Component{
         path:subDisabled?subModulePath:'',
       })
     })
-    .then(res=>{
-      console.log(res)
+    .then(res=>res.json())
+    .then(json=>{
+      if(json.code=="S"){
+        window.location.reload()
+      }
     })
     .catch(err=>{
       console.log(err)
