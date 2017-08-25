@@ -32,6 +32,7 @@ export default class ManageModule extends Component{
 
   componentWillMount(){
     fetch(`${TANGJG.HOST}/method/getMenuList`,{
+      credentials: 'include',
       method:'get',
       headers: {
         'Content-Type': 'application/json'
@@ -44,7 +45,7 @@ export default class ManageModule extends Component{
       })
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -54,6 +55,7 @@ export default class ManageModule extends Component{
       this.setState({value,parentID});
     }
     fetch(`${TANGJG.HOST}/method/getSubList?parent=${value}`,{
+      credentials: 'include',
       method:'get',
       headers: {
         'Content-Type': 'application/json'
@@ -66,7 +68,7 @@ export default class ManageModule extends Component{
       })
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   };
 
@@ -82,6 +84,7 @@ export default class ManageModule extends Component{
   /*提交编辑完的子元素*/
   editSubSubmit = () =>{
     fetch(`${TANGJG.HOST}/method/submitSubItem?id=${this.state.subID}`,{
+      credentials: 'include',
       method:'post',
       headers: {
         'Content-Type': 'application/json'
@@ -100,7 +103,7 @@ export default class ManageModule extends Component{
       this.handleChange(null,null,this.state.value)
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -140,6 +143,7 @@ export default class ManageModule extends Component{
   /*删除选中行*/
   deleteLine = () => {
     fetch(`${TANGJG.HOST}/method/deleteSubLine?id=${this.state.subLineID}`,{
+      credentials: 'include',
       method:'post',
       headers: {
         'Content-Type': 'application/json'
@@ -151,7 +155,7 @@ export default class ManageModule extends Component{
       this.handleChange(null,null,this.state.value)
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -159,6 +163,7 @@ export default class ManageModule extends Component{
   deleteParent = () => {
     if(this.state.parentID == null) return false;
     fetch(`${TANGJG.HOST}/method/deleteParent`,{
+      credentials: 'include',
       method:'post',
       headers: {
         'Content-Type': 'application/json'
@@ -173,7 +178,7 @@ export default class ManageModule extends Component{
       this.handleChange(null,null,this.state.value)
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 

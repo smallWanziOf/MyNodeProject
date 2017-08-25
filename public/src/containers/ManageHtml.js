@@ -101,6 +101,7 @@ class PublishArticle extends Component{
       return false;
     }else{
       fetch(`${TANGJG.HOST}/method/publishHtmlArticle`,{
+        credentials: 'include',
         method:'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -130,7 +131,7 @@ class PublishArticle extends Component{
         }
       })
       .catch(err=>{
-        console.log(err)
+        TANGJG.loginExpires()
       })
     }
   }
@@ -203,6 +204,7 @@ class HistoryArticle extends Component{
   }
 
   componentWillMount(){
+    console.log(12)
     this.fetchArticle();
   }
 
@@ -210,6 +212,7 @@ class HistoryArticle extends Component{
   fetchArticle = () => {
     let {page} = this.state;
     fetch(`${TANGJG.HOST}/method/queryHtmlArticle?page=${page}`,{
+      credentials: 'include',
       method:'get',
       headers: {
         'Content-Type': 'application/json'
@@ -227,7 +230,7 @@ class HistoryArticle extends Component{
       }
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -241,6 +244,7 @@ class HistoryArticle extends Component{
     e.preventDefault();
     let {value} = e.target.attributes[1];
     fetch(`${TANGJG.HOST}/method/deleteHtmlArticle?id=${value}`,{
+      credentials: 'include',
       method:'get',
       headers: {
         'Content-Type': 'application/json'
@@ -255,7 +259,7 @@ class HistoryArticle extends Component{
       }
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 

@@ -1,0 +1,79 @@
+##这里主要介绍一下在配置Linux的时候遇到的一些问题
+
+##Linux的配置信息（Ubuntu14.04）
+1.卸载不想要的软件sudo apt-get remove --purge google-chrome-unstable（--purge 选项表示彻底删除改软件和相关文件）
+2.删除文件夹sudo rm -rf [filename]
+3.删除文件sudo rm -f [filename]
+
+##root
+1.设置root密码sudo passwd
+2.进入root权限su root
+
+##terminal
+1.可以选择在文件搜索中查找terminal然后运行
+2.sudo apt-get install nautilus-open-terminal重启虚拟机即可实现右击运行
+
+##node&&npm
+1.sudo apt-get install nodejs-legacy安装nodejs
+2.sudo apt-get install npm安装低版本的npm（升级node之前不能升级npm,最新版本的npm需要ES6语法的支持）
+3.用低版本的npm安装n模块sudo npm install n -g（n是用来控制node的版本的）
+4.利用n升级node版本sudo n stable将node升级到稳定版
+5.node升级成功后再升级npm,sudo npm install npm@latest -g
+6.如果提示更新失败可以根据提示执行最后一行命令,我在安装时遇到的是如下所示的错误！
+┌────────────────────────────────────────────────────────┐
+│                npm update check failed                 │
+│          Try running with sudo or get access           │
+│          to the local update config store via          │
+│ sudo chown -R $USER:$(id -gn $USER) /home/tang/.config │
+└────────────────────────────────────────────────────────┘
+运行sudo chown -R $USER:$(id -gn $USER) /home/tang/.config就OK了
+ 
+##mysql
+1.sudo apt-get install mysql-server
+2.apt-get isntall mysql-client
+3.sudo apt-get install libmysqlclient-dev
+4.发现只要安装了第一行命令mysql就已经安装成功了mysql -u[用户名默认root] -p[安装数据库是设置的密码]。
+5.数据库的一些操作
+  5.1、显示数据库
+  show databases;
+  5.2、选择数据库
+  use 数据库名;
+  5.3、显示数据库中的表
+  show tables;
+  5.4、显示数据表的结构 
+  describe 表名;
+  5.5、显示表中记录 
+  SELECT * FROM 表名
+  5.6、建库
+  create databse 库名;
+
+##git
+1.sudo apt-get install git
+最常用的 git 命令有：
+   add        添加文件内容至索引
+   bisect     通过二分查找定位引入 bug 的变更
+   branch     列出、创建或删除分支
+   checkout   检出一个分支或路径到工作区
+   clone      克隆一个仓库到一个新目录
+   commit     记录变更到仓库
+   diff       显示提交之间、提交和工作区之间等的差异
+   fetch      从另外一个仓库下载对象和引用
+   grep       输出和模式匹配的行
+   init       创建一个空的 Git 仓库或重新初始化一个已存在的仓库
+   log        显示提交日志
+   merge      合并两个或更多开发历史
+   mv         移动或重命名一个文件、目录或符号链接
+   pull       获取并整合另外的仓库或一个本地分支
+   push       更新远程引用和相关的对象
+   rebase     本地提交转移至更新后的上游分支中
+   reset      重置当前 HEAD 到指定状态
+   rm         从工作区和索引中删除文件
+   show       显示各种类型的对象
+   status     显示工作区状态
+   tag        创建、列出、删除或校验一个 GPG 签名的标签对象
+2.clone一个仓库之前需要git init一次进行初始化否则pull不下来
+
+##网络
+1.需要在该虚拟机的网络配置中修改桥接模式（默认的是NAT模式共享主机的网络）
+2.百度了很多说改为桥接以后需要自己设置域名和DNS但是发现Ubuntu14.04好像不需要自己手动设置已经设置好了
+3.改为桥接模式以后内网所有的IP就都可以访问你虚拟机上启的服务了

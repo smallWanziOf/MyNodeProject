@@ -16,11 +16,11 @@ export default class Header extends Component{
 
   componentWillMount = () => {
     fetch(`${TANGJG.HOST}/method/getMenuList`,{
-      mode:'cors',
+      credentials: 'include',
       method: 'GET',
       headers:{
         "Content-Type":"application/json"
-      }
+      },
     })
     .then(res=>{return res.json()})
     .then(data=>{
@@ -29,7 +29,7 @@ export default class Header extends Component{
       })
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 

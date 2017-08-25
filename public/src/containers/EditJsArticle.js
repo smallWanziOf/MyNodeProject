@@ -34,6 +34,7 @@ export default class EditJsArticle extends Component{
 
   queryHtmlArticle = () => {
     fetch(`${TANGJG.HOST}/method/queryJsAtticleFromId?id=${this.state.value}`,{
+      credentials: 'include',
       method:'get',
       headers:{
         'Content-Type': 'application/json'
@@ -55,7 +56,7 @@ export default class EditJsArticle extends Component{
       }
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -98,6 +99,7 @@ export default class EditJsArticle extends Component{
       return false;
     }else{
       fetch(`${TANGJG.HOST}/method/EditJsArticleFromId?id=${value}`,{
+        credentials: 'include',
         method:'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -126,7 +128,7 @@ export default class EditJsArticle extends Component{
         }
       })
       .catch(err=>{
-        console.log(err)
+        TANGJG.loginExpires()
       })
     }
   }

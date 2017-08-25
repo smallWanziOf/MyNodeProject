@@ -34,6 +34,7 @@ export default class EditCssArticle extends Component{
 
   queryHtmlArticle = () => {
     fetch(`${TANGJG.HOST}/method/queryCssAtticleFromId?id=${this.state.value}`,{
+      credentials: 'include',
       method:'get',
       headers:{
         'Content-Type': 'application/json'
@@ -55,7 +56,7 @@ export default class EditCssArticle extends Component{
       }
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 
@@ -98,6 +99,7 @@ export default class EditCssArticle extends Component{
       return false;
     }else{
       fetch(`${TANGJG.HOST}/method/EditCssArticleFromId?id=${value}`,{
+        credentials: 'include',
         method:'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -126,7 +128,7 @@ export default class EditCssArticle extends Component{
         }
       })
       .catch(err=>{
-        console.log(err)
+        TANGJG.loginExpires()
       })
     }
   }

@@ -6,9 +6,9 @@ var multer = require('multer');
 var fs = require('fs');
 var path = require("path");
 var cookieParser = require("cookie-parser");
-var router = express.Router();
+//var router = express.Router();
 var mysql = require("mysql");
-var a = 1;
+var session = require("express-session");
 /**
  * 创建一个连接池链接mysql
  */
@@ -39,21 +39,69 @@ app.use(multerObj.any());
 app.use(cookieParser());
 
 /**
+ * session相关配置
+ */
+var key = "tang_cat"
+app.use(session({
+  name:'session_id',
+  secret: key,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 20*60*1000 }
+}))
+
+/**
  * 设置跨域的请求
  */
-app.all('*', function(req, res, next) {
-  console.log(a++);
-  //res.header("Access-Control-Allow-Credentials","true");
+/*app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Credentials","true");
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeil");
   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
   res.header("X-Powered-By",' 3.2.1');
-  res.header("Content-Type", "application/json;charset=utf-8");
+  //res.header("Content-Type", "application/json;charset=utf-8");
   if (req.method == 'OPTIONS') {
     res.sendStatus(200); /让options请求快速返回/
   }else {
     next();
   }
+})*/
+
+app.use('/method',function(req,res,next){
+  var clientS = cookieParser.signedCookies(req.cookies,key);
+  if((clientS.session_id !== req.session.username) && req.path!=='/login'){
+    res.status(500);
+    res.send('当前登录已过期请重新登录');
+  }else{
+    next();
+  }
+})
+
+/**
+ * 用户登录验证
+ */
+app.post('/method/login',function(req,res){
+  var username = req.body.username;
+  var password = req.body.password;
+  db.query(`SELECT username,password FROM user_table WHERE username='${username}'`,(err,data)=>{
+    if(err){
+      res.send(JSON.stringify({code:'E',msg:'登录错误'}));
+      return false;
+    }else{
+      if(data.length<1){
+        res.send(JSON.stringify({code:'E',msg:'用户名不存在'}));
+        return false;
+      }else{
+        if(password == data[0].password){
+          req.session.username = req.sessionID;
+          res.send({code:"S", msg: username});                           
+        }else{
+          res.send(JSON.stringify({code:'E',msg:'密码错误'}));
+          return false;
+        }
+      }
+    }
+  })
 })
 
 /**
@@ -533,7 +581,7 @@ app.use(function(req, res, next) {
 /**
  * 启动服务监听8010端口
  */
-var server = app.listen(8081, function () {
+var server = app.listen(8081, '192.168.9.108' ,function () {
   var host = server.address().address
   var port = server.address().port
   console.log("应用实例，访问地址为 http://%s:%s", host, port)

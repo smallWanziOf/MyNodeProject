@@ -3,7 +3,7 @@ import "./style/style.less";
 import 'whatwg-fetch';
 import React,{Component} from "react";
 import {render} from "react-dom";
-import { BrowserRouter , Route , Link} from 'react-router-dom';
+import { BrowserRouter , Route , Link , Redirect} from 'react-router-dom';
 import Main from './containers/Main';
 import Child from './containers/Child';
 import Login from './containers/Login';
@@ -22,16 +22,19 @@ injectTapEventPlugin();
 
 const _routes=(
   <MuiThemeProvider>
-    <Main>
-      <Route path="/addModule" component={AddModule}/>
-      <Route path="/manageModule" component={ManageModule}/>
-      <Route path="/manageHtml" component={ManageHtml}/>
-      <Route path="/manageCss" component={ManageCss}/>
-      <Route path="/manageJs" component={ManageJs}/>
-      <Route path="/editHtmlArticle" component={EditHtmlArticle}/>
-      <Route path="/editCssArticle" component={EditCssArticle}/>
-      <Route path="/editJsArticle" component={EditJsArticle}/>
-    </Main>
+    <div>
+      <Route path="/login" component={Login}/>
+      <Main>
+        <Route path="/addModule" component={AddModule}/>
+        <Route path="/manageModule" component={ManageModule}/>
+        <Route path="/manageHtml" component={ManageHtml}/>
+        <Route path="/manageCss" component={ManageCss}/>
+        <Route path="/manageJs" component={ManageJs}/>
+        <Route path="/editHtmlArticle" component={EditHtmlArticle}/>
+        <Route path="/editCssArticle" component={EditCssArticle}/>
+        <Route path="/editJsArticle" component={EditJsArticle}/>
+      </Main>
+    </div>
   </MuiThemeProvider>
 )
 

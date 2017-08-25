@@ -88,7 +88,7 @@ export default class AddModule extends Component{
   fetch = () => {
     let {mainModuleValue,subDisabled,subModuleValue,subModulePath} = this.state;
     fetch(`${TANGJG.HOST}/method/addModule`,{
-      //credentials: 'include',
+      credentials: 'include',
       mode: 'cors',
       method: 'POST',
       headers: {
@@ -108,7 +108,7 @@ export default class AddModule extends Component{
       }
     })
     .catch(err=>{
-      console.log(err)
+      TANGJG.loginExpires()
     })
   }
 

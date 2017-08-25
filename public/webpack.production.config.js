@@ -58,10 +58,7 @@ module.exports = {
     new UglifyJSPlugin({
       compress: {
         warnings: false,
-        drop_console:true,
-        pure_funcs:['console.log']
       },
-      sourceMap:false
     }),
     new webpack.DefinePlugin({
       'process.env': {

@@ -77,5 +77,26 @@ li {
 #Pagination ul li.hiddenDou {
   display: none;
 }
+#Login {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#Login .login {
+  position: relative;
+  z-index: 2;
+  width: 300px;
+  margin: 200px auto;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+}
+#Login .cloud {
+  position: absolute;
+  z-index: 1;
+  background-image: url(images/login.jpg);
+}
 
 /*# sourceMappingURL=style.css.map*/
