@@ -11,6 +11,7 @@ export default class Header extends Component{
       dialogOpen:false,
       itemOptenKey:null,
       dataItem:null,
+      user:'',
     }
   }
 
@@ -49,7 +50,19 @@ export default class Header extends Component{
     this.setState({dialogOpen: false});
   };
 
-  buttonAction = () => <FlatButton label="OK" primary={true} onTouchTap={this.handleClose}/>
+  handleLogout = () => {
+    TANGJG.logout();
+    this.setState({dialogOpen: false});
+  }
+
+  buttonAction = () =>{
+    return (
+      <div>
+        <FlatButton label="取消" secondary={true} onTouchTap={this.handleClose}/>
+        <FlatButton label="确定" primary={true} onTouchTap={this.handleLogout}/>
+      </div>
+    )
+  }
 
   itemClick = (e,value) => {
     value == this.state.itemOptenKey?
@@ -67,19 +80,18 @@ export default class Header extends Component{
     return(
       <header id="Header">
         <AppBar
-          title="欢迎！TangJG"
+          title={'hi,'+TANGJG.getCookie('name')}
           iconElementLeft={<Role/>}
           iconElementRight={<Login />}
           onRightIconButtonTouchTap={this.handleLogin}
         />
         <Dialog
-          title="Dialog With Actions"
+          title="确认退出登录？"
           modal={false}
           actions={this.buttonAction()}
           open={this.state.dialogOpen}
           onRequestClose={this.handleClose}
         >
-          你好这是一个测试组件！请不要在意
         </Dialog>
         <Drawer open={this.state.drawerOpen} containerClassName="tang-header-drawer">
           {

@@ -27,6 +27,7 @@ var db = mysql.createPool({
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+
 /**
  * 上传文件的类型及存放的路径
  */
@@ -94,6 +95,7 @@ app.post('/method/login',function(req,res){
       }else{
         if(password == data[0].password){
           req.session.username = req.sessionID;
+          req.session.user = username;
           res.send({code:"S", msg: username});                           
         }else{
           res.send(JSON.stringify({code:'E',msg:'密码错误'}));
@@ -544,7 +546,85 @@ app.get('/method/deleteJsArticle',(req,res)=>{
   })
 })
 
+/**
+ * 新建日志选择创建人
+ */
+app.get('/method/getStaff',(req,res)=>{
+  db.query(`SELECT name FROM staff`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S',data:data}));
+      return false;
+    }
+  })
+})
 
+/**
+ * 提交新的日志记录
+ */
+app.post('/method/submitLog',(req,res)=>{
+  let {creater,log,logTime,secret} = req.body;
+  db.query(`INSERT INTO log_table (creater,log,logTime,secret) VALUES ('${creater}','${log}','${logTime}','${secret}')`,(error,data)=>{
+    if(error){
+      res.json({code:'E',msg:{error}});
+      return false;
+    }else{
+      res.json({code:'S'});
+      return false;
+    }
+  })
+})
+
+/**
+ *获取所有的非隐私的日志
+ */
+app.get('/method/queryLog',(req,res)=>{
+  let page = req.query.page;
+  if(page<=0){
+    res.send(JSON.stringify({code:'S',data:[],total:0}));
+    return false;
+  }else{
+    db.query(`SELECT COUNT(ID) AS total FROM log_table WHERE secret='false'`,(error,data1)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+        res.end();
+        return false;
+      }else{
+        db.query(`SELECT ID,creater,logTime,secret,log FROM log_table WHERE secret='false' ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
+          if(error){
+            res.send(JSON.stringify({code:'E',msg:error}));
+            res.end();
+            return false;
+          }else{
+            res.send(JSON.stringify({code:"S",data:data2,total:data1[0].total}));
+            return false;
+          }
+        })
+      }
+    })
+  }
+})
+
+/**
+ * 通过ID删除一篇日志
+ */
+app.get('/method/deleteLog',(req,res)=>{
+  console.log(req.session.user)
+  let id = req.query.id;
+  db.query(`DELETE FROM log_table WHERE ID=${id}`,(error,data)=>{
+    if(error){
+      res.send(JSON.stringify({code:"E",msg:error}));
+      res.end();
+      return false;
+    }else{
+      res.send(JSON.stringify({code:'S'}));
+      res.end();
+      return false;
+    }
+  })
+})
 
 /**
  * 文件上传的接口

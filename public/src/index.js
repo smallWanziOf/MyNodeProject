@@ -15,6 +15,8 @@ import ManageJs from './containers/ManageJs';
 import EditHtmlArticle from './containers/EditHtmlArticle';
 import EditCssArticle from './containers/EditCssArticle';
 import EditJsArticle from './containers/EditJsArticle';
+import AddLog from './containers/AddLog';
+import LogQuery from './containers/LogQuery';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin  from "react-tap-event-plugin";
@@ -33,6 +35,8 @@ const _routes=(
         <Route path="/editHtmlArticle" component={EditHtmlArticle}/>
         <Route path="/editCssArticle" component={EditCssArticle}/>
         <Route path="/editJsArticle" component={EditJsArticle}/>
+        <Route path="/addLog" component={AddLog}/>
+        <Route path="/logQuery" component={LogQuery}/>
       </Main>
     </div>
   </MuiThemeProvider>

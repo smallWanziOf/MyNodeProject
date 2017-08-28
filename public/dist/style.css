@@ -98,5 +98,11 @@ li {
   z-index: 1;
   background-image: url(images/login.jpg);
 }
+#AddLog .tang-DatePicker > div {
+  left: 24px;
+}
+#LogQuery table > thead > tr > th:first-child {
+  display: none;
+}
 
 /*# sourceMappingURL=style.css.map*/

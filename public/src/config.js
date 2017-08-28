@@ -25,7 +25,9 @@ const history = createHistory();
     window.location.reload();
   }
   function logout(){
-    Cookie.remove('name')
+    Cookie.remove('name');
+    history.push("/login");
+    window.location.reload();
   }
   function getCookie(c){
     return Cookie.get(c)
