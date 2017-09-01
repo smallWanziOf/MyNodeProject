@@ -1,4 +1,6 @@
-body {
+body,
+p,
+pre {
   margin: 0;
 }
 a {
@@ -11,17 +13,32 @@ li {
   padding: 0;
   margin: 0;
 }
-.tang-header-drawer {
+#Header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+}
+#Header .tang-header-drawer {
   z-index: 1 !important;
   padding-top: 64px;
   overflow: hidden !important;
 }
-.tang-sub-item {
+#Header .tang-sub-item {
   padding-left: 60px !important;
 }
-.tang-reast-a {
+#Header .tang-reast-a {
   display: block;
   text-decoration: none;
+}
+#Header .tang-welcome {
+  display: inline-block;
+  font-size: 26px;
+  position: relative;
+  bottom: 5px;
+  left: 5px;
+  color: #fff;
 }
 #AddModule .tang-addmodule-form > div {
   margin: 30px auto;
@@ -83,6 +100,8 @@ li {
   bottom: 0;
   left: 0;
   right: 0;
+  background: url(images/login.jpg) no-repeat;
+  background-size: 100% 100%;
 }
 #Login .login {
   position: relative;
@@ -92,17 +111,43 @@ li {
   background-color: #fff;
   border-radius: 5px;
   padding: 20px;
-}
-#Login .cloud {
-  position: absolute;
-  z-index: 1;
-  background-image: url(images/login.jpg);
+  text-align: center;
 }
 #AddLog .tang-DatePicker > div {
   left: 24px;
 }
 #LogQuery table > thead > tr > th:first-child {
   display: none;
+}
+#LogQuery .tang-DatePicker {
+  display: inline-block;
+}
+#LogQuery .tang-SqlBtn {
+  margin: 20px 0;
+  text-align: right;
+}
+#LogQuery .tang-SqlBtn > div {
+  margin: 0 20px;
+}
+#ManageUser table > thead > tr > th:first-child {
+  display: none;
+}
+#ChangePassword {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#ChangePassword .login {
+  position: relative;
+  z-index: 2;
+  width: 300px;
+  margin: 200px auto;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
 }
 
 /*# sourceMappingURL=style.css.map*/

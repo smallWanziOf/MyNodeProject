@@ -21,7 +21,7 @@ const history = createHistory();
     var date = new Date(Date.now() + 20*60*1000);
     let {name} = props;
     Cookie.set('name',name,{expires:date})
-    history.push('/addModule');
+    history.push('/');
     window.location.reload();
   }
   function logout(){

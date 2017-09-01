@@ -11,7 +11,7 @@ export default class Main extends Component{
   }
 
   renderSection = () => {
-    return <section style={{margin:'20px 20px 100px 300px'}}>{this.props.children}</section>
+    return <section style={{margin:'90px 20px 100px 300px'}}>{this.props.children}</section>
   }
 
   componentWillMount(){

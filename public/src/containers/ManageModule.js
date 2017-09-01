@@ -268,8 +268,8 @@ export default class ManageModule extends Component{
               })
             }
             <div style={{textAlign:"right"}}>
-              <FlatButton label="确定" secondary={true} onClick={this.editSubSubmit}/>
               <FlatButton label="取消" primary={true} onClick={this.handleClose} />
+              <FlatButton label="确定" secondary={true} onClick={this.editSubSubmit}/>
             </div>
           </Dialog>
         }

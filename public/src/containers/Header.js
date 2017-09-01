@@ -1,7 +1,8 @@
 import React,{Component} from "react";
 import {Link} from "react-router-dom";
 import {RaisedButton,AppBar,FlatButton,IconButton,Dialog,Drawer,MenuItem,Avatar,Menu,FontIcon,ListItem} from 'material-ui';
-
+import createHistory from 'history/createBrowserHistory';
+const history = createHistory();
 export default class Header extends Component{
 
   constructor(props){
@@ -55,6 +56,7 @@ export default class Header extends Component{
     this.setState({dialogOpen: false});
   }
 
+
   buttonAction = () =>{
     return (
       <div>
@@ -75,12 +77,18 @@ export default class Header extends Component{
     })
   }
 
+  titleRender = () => {
+    return (
+      <div style={{textAlign:'center',lineHeight:'unset'}}>NodeJS</div>
+    )
+  }
+
   render(){
     let {dataItem} = this.state;
     return(
       <header id="Header">
         <AppBar
-          title={'hi,'+TANGJG.getCookie('name')}
+          title={this.titleRender()}
           iconElementLeft={<Role/>}
           iconElementRight={<Login />}
           onRightIconButtonTouchTap={this.handleLogin}
@@ -153,11 +161,14 @@ class Login extends Component {
 class Role extends Component {
   render() {
     return (
-      <Avatar
-        src="upload/role/Koala.jpg"
-        size={30}
-        style={{marginTop:10}}
-      />
+      <div>
+        <Avatar
+          src="upload/role/Koala.jpg"
+          size={30}
+          style={{marginTop:10}}
+        />
+        <span className="tang-welcome">hi,{TANGJG.getCookie('name')}</span>
+      </div>
     );
   }
 }
