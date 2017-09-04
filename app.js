@@ -10,7 +10,11 @@ var cookieParser = require("cookie-parser");
 var mysql = require("mysql");
 var session = require("express-session");
 var crypto = require('crypto');
+var request = require('request');
+var cheerio = require('cheerio');
+var async = require('async');
 var hashValue = "tang|jian|guo|唐建国";
+
 /**
  *md5加密密码 
  */
@@ -963,8 +967,9 @@ app.post('/method/deleteSatinFile',function(req,res) {
  */
 app.post('/method/submitSatin',(req,res)=>{
   let content = req.body.content,
-  src = req.body.src;
-  db.query(`INSERT INTO net_satin (content,src,author) VALUES ('${content}','${src}','${req.session.user}')`,(error,data)=>{
+  src = req.body.src,
+  time = req.body.time;
+  db.query(`INSERT INTO net_satin (content,src,author,time) VALUES ('${content}','${src}','${req.session.user}','${time}')`,(error,data)=>{
     if(error){
       res.send(JSON.stringify({code:'E',msg:error}));
       return false;
@@ -1135,7 +1140,7 @@ app.post('/method/joinTeamBuild',(req,res)=>{
       let name = data[0].join_name;
       if(name !== null){
         if(name.indexOf(`${req.session.user}`) !== -1){
-          res.send(JSON.stringify({code:'E',msg:'你已表示想要参与过该活动'}));
+          res.send(JSON.stringify({code:'E',msg:'你已参与过该活动'}));
           return false;
         }else{
           db.query(`UPDATE team_build SET join_num=${value+1},join_name='${name.concat(','+req.session.user)}' WHERE ID=${id}`,(error,data)=>{
@@ -1157,6 +1162,43 @@ app.post('/method/joinTeamBuild',(req,res)=>{
           }
         })
       }
+    }
+  })
+})
+
+/**
+ * 执行爬虫获取网页内容
+ */
+app.get('/method/startSpider',(req,res)=>{
+  request('http://www.budejie.com/text/',(error,response,body)=>{
+    if(!error && response.statusCode == 200){
+      var JQ = cheerio.load(body);
+      var content = JQ('.j-r-list-c-desc');
+      var length = content.length;
+      var contentTime = JQ('.u-time');
+      var index = 0;
+      async.each(content,function(item, callback) {
+        var i = index++;
+        var text = (JQ('.j-r-list-c-desc').eq(i).text()).trim();
+        var time = (JQ('.u-time').eq(i).text()).trim();
+        db.query(`SELECT * FROM net_satin WHERE time='${time}'`,(error,data)=>{
+          callback(error)
+          if(data.length == 0){
+            db.query(`INSERT INTO net_satin (content,author,time) VALUES ('${text}','${req.session.user}','${time}')`,function(error, tags, fields){
+              if(error){
+                callback(error)
+                return false;
+              }
+            })
+          }
+        })
+      }, function(error,i) {
+        if(error){
+          res.end(JSON.stringify({code:'E',msg:error}));
+          return false;
+        }
+        res.end(JSON.stringify({code:'S'}));
+      });
     }
   })
 })
@@ -1187,7 +1229,7 @@ app.use(function(req, res, next) {
 /**
  * 启动服务监听8010端口
  */
-var server = app.listen(8081, '192.168.9.108' ,function () {
+var server = app.listen(8081, '192.168.10.32' ,function () {
   var host = server.address().address
   var port = server.address().port
   console.log("应用实例，访问地址为 http://%s:%s", host, port)

@@ -149,5 +149,8 @@ li {
   padding: 20px;
   text-align: center;
 }
+#StartSchedule table > thead > tr > th:first-child {
+  display: none;
+}
 
 /*# sourceMappingURL=style.css.map*/

@@ -127,7 +127,8 @@ export default class AddNetSatin extends Component{
       },
       body:JSON.stringify({
         src:this.state.path,
-        content:value
+        content:value,
+        time:moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
       })
     })
     .then(res=>res.json())

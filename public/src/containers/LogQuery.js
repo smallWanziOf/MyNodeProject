@@ -195,7 +195,7 @@ export default class LogQuery extends Component{
                 <TableHeaderColumn>内容</TableHeaderColumn>
               </TableRow>
             </TableHeader>
-            <TableBody displayRowCheckbox={false}>
+            <TableBody displayRowCheckbox={false} showRowHover={true}>
               {
                 dataSource.length>0&&
                 dataSource.map((item,i)=>{
@@ -222,7 +222,7 @@ export default class LogQuery extends Component{
                 <TableHeaderColumn>操作</TableHeaderColumn>
               </TableRow>
             </TableHeader>
-            <TableBody displayRowCheckbox={false}>
+            <TableBody displayRowCheckbox={false} showRowHover={true}>
               {
                 dataSource.length>0&&
                 dataSource.map((item,i)=>{

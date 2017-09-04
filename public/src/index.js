@@ -29,6 +29,7 @@ import NetSatin from './containers/NetSatin';
 import AddNetSatin from './containers/AddNetSatin';
 import TeamBuild from './containers/TeamBuild';
 import CreateTeamBuild from './containers/CreateTeamBuild';
+import StartSchedule from './containers/StartSchedule';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin  from "react-tap-event-plugin";
@@ -61,6 +62,7 @@ const _routes=(
         <Route path="/addNetSatin" component={AddNetSatin}/>
         <Route path="/teamBuild" component={TeamBuild}/>
         <Route path="/createTeamBuild" component={CreateTeamBuild}/>
+        <Route path="/startSchedule" component={StartSchedule}/>
       </Main>
     </div>
   </MuiThemeProvider>
