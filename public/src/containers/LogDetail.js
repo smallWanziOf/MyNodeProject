@@ -48,7 +48,7 @@ export default class LogDetail extends Component{
           style={{width:'95%',left:24}}
           multiLine={true}
           inputStyle={{text:'textarea'}}
-          value = {dataSource.log}
+          value = {dataSource.log.replace(/&#039/g,"'").replace(/&quot/g,'"')}
           disabled = {true}
           floatingLabelText="日志描述"
           id="logDescribe"

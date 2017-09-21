@@ -18,7 +18,7 @@ const history = createHistory();
     return s;
   }
   function login(props){
-    var date = new Date(Date.now() + 20*60*1000);
+    var date = new Date(Date.now() + 60*60*1000);
     let {name} = props;
     Cookie.set('name',name,{expires:date})
     history.push('/');
@@ -40,6 +40,22 @@ const history = createHistory();
       return false;
     }
   }
+  function escapeCode(value){
+    if(typeof value === "string"){
+      return value.replace(/'/g,' &#039 ').replace(/"/g,' &quot ');
+    }else{
+      alert("This Project has a problem ! please connect Admin, Sorry!!!");
+      loginExpires()
+    }
+  }
+  function enEscapeCode(value){
+    if(typeof value === "string"){
+      return value.replace(/ &#039 /g,"'").replace(/ &quot /g,'"');
+    }else{
+      alert("This Project has a problem ! please connect Admin, Sorry!!!");
+      loginExpires()
+    }
+  }
   window.TANGJG={
     HOST,
     deepCopy,
@@ -47,5 +63,7 @@ const history = createHistory();
     logout,
     getCookie,
     loginExpires,
+    escapeCode,
+    enEscapeCode
   };
 }()

@@ -8,7 +8,6 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 
-
 /**
  * 解析POST数据
  * create application/json parser
@@ -16,7 +15,6 @@ var session = require("express-session");
  */
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
 
 /**
  * 上传文件的类型及存放的路径
@@ -38,7 +36,7 @@ app.use(session({
   secret: key,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 20*60*1000 }
+  cookie: { maxAge: 60*60*1000 }
 }))
 
 /**
@@ -57,6 +55,11 @@ app.use(session({
     next();
   }
 })*/
+
+/**
+ *定时抓取段子的内容 
+ */
+var schedule = require("./server/schedule");
 
 var baseRouter = require('./router/serverAPI.js');
 app.use('/',baseRouter);

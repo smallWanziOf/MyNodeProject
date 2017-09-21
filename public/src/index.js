@@ -9,12 +9,8 @@ import Child from './containers/Child';
 import Login from './containers/Login';
 import AddModule from './containers/AddModule';
 import ManageModule from './containers/ManageModule';
-import ManageHtml from './containers/ManageHtml';
-import ManageCss from './containers/ManageCss';
-import ManageJs from './containers/ManageJs';
-import EditHtmlArticle from './containers/EditHtmlArticle';
-import EditCssArticle from './containers/EditCssArticle';
-import EditJsArticle from './containers/EditJsArticle';
+import TechnologyBase from './containers/TechnologyBase';
+import EditTechnologyBase from './containers/EditTechnologyBase';
 import AddLog from './containers/AddLog';
 import LogQuery from './containers/LogQuery';
 import LogDetail from './containers/LogDetail';
@@ -30,6 +26,9 @@ import AddNetSatin from './containers/AddNetSatin';
 import TeamBuild from './containers/TeamBuild';
 import CreateTeamBuild from './containers/CreateTeamBuild';
 import StartSchedule from './containers/StartSchedule';
+import WeatherForecast from './containers/WeatherForecast';
+import ReadeArticle from './containers/ReadeArticle';
+import ClassificationQuery from './containers/ClassificationQuery';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin  from "react-tap-event-plugin";
@@ -43,12 +42,8 @@ const _routes=(
         <Route path="/" exact={true} component={Welcome}/>
         <Route path="/addModule" component={AddModule}/>
         <Route path="/manageModule" component={ManageModule}/>
-        <Route path="/manageHtml" component={ManageHtml}/>
-        <Route path="/manageCss" component={ManageCss}/>
-        <Route path="/manageJs" component={ManageJs}/>
-        <Route path="/editHtmlArticle" component={EditHtmlArticle}/>
-        <Route path="/editCssArticle" component={EditCssArticle}/>
-        <Route path="/editJsArticle" component={EditJsArticle}/>
+        <Route path="/technologyBase" component={TechnologyBase}/>
+        <Route path="/editTechnologyBase" component={EditTechnologyBase}/>
         <Route path="/addLog" component={AddLog}/>
         <Route path="/logQuery" component={LogQuery}/>
         <Route path="/logDetail" component={LogDetail}/>
@@ -63,6 +58,9 @@ const _routes=(
         <Route path="/teamBuild" component={TeamBuild}/>
         <Route path="/createTeamBuild" component={CreateTeamBuild}/>
         <Route path="/startSchedule" component={StartSchedule}/>
+        <Route path="/weatherForecast" component={WeatherForecast}/>
+        <Route path="/readeArticle" component={ReadeArticle}/>
+        <Route path="/classificationQuery" component={ClassificationQuery}/>
       </Main>
     </div>
   </MuiThemeProvider>

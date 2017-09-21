@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "echarts": "^3.7.1",
+    "echarts-for-react": "^2.0.0",
     "history": "^4.7.2",
     "js-cookie": "^2.1.4",
     "keygrip": "^1.0.1",
     "less-loader": "^4.0.4",
-    "nprogress": "^0.2.0"
+    "nprogress": "^0.2.0",
+    "wangeditor": "^3.0.9"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",

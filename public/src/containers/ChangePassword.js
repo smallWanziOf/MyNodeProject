@@ -67,9 +67,9 @@ export default class ChangePassword extends Component{
         'Content-Type': 'application/json'
       },
       body:JSON.stringify({
-        username:this.state.username,
-        oldPassword:this.state.oldPassword,
-        newPassword:this.state.newPassword
+        username:TANGJG.escapeCode(this.state.username),
+        oldPassword:TANGJG.escapeCode(this.state.oldPassword),
+        newPassword:TANGJG.escapeCode(this.state.newPassword)
       })
     })
     .then(res=>res.json())

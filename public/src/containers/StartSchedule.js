@@ -2,7 +2,7 @@ import React,{Component} from "react";
 import Pagination from "./Component/Pagination";
 import {Link,Redirect} from "react-router-dom";
 import moment from "moment";
-import {DatePicker,DropDownMenu,MenuItem,FlatButton,Checkbox} from "material-ui";
+import {DatePicker,DropDownMenu,MenuItem,FlatButton,Checkbox,Snackbar} from "material-ui";
 import {
   Table,
   TableBody,
@@ -19,13 +19,14 @@ export default class StartSchedule extends Component{
   constructor(prop){
     super(prop);
     this.state = {
-
+      open:false,
+      error:'',
     }
   }
 
   handleStartSpider = (e) => {
     e.preventDefault();
-    fetch(`${TANGJG.HOST}/method/startSpider`,{
+    fetch(`${TANGJG.HOST}/method/startSpiderText`,{
       credentials: 'include',
       method:'get',
       headers: {
@@ -34,11 +35,27 @@ export default class StartSchedule extends Component{
     })    
     .then(res=>res.json())
     .then(json=>{
-      console.log(json)
+      if(json.code === 'S'){
+        this.setState({
+          open:true,
+          error:'执行成功！'
+        })
+      }else{
+        this.setState({
+          open:true,
+          error:'执行失败！'
+        })
+      }
     })
     .catch(err=>{
-      //TANGJG.loginExpires()
+      TANGJG.loginExpires()
     })
+  }
+
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
   }
 
   render(){
@@ -54,11 +71,24 @@ export default class StartSchedule extends Component{
             </TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
-            <TableRowColumn>1</TableRowColumn>
-            <TableRowColumn>获取段子</TableRowColumn>
-            <TableRowColumn><a href="" onClick={this.handleStartSpider}>立即执行</a></TableRowColumn>
+            <TableRow>
+              <TableRowColumn>1</TableRowColumn>
+              <TableRowColumn>获取百思不得姐文字段子</TableRowColumn>
+              <TableRowColumn><a href="" onClick={this.handleStartSpider}>立即执行</a></TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>2</TableRowColumn>
+              <TableRowColumn>获取百思不得姐图片段子</TableRowColumn>
+              <TableRowColumn><a href="" onClick={this.handleStartSpider}>立即执行</a></TableRowColumn>
+            </TableRow>
           </TableBody>
         </Table>
+        <Snackbar
+          open={this.state.open}
+          message={this.state.error}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose}
+        />
       </div>
     )
   }

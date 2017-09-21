@@ -107,11 +107,11 @@ class PublishArticle extends Component{
           'Content-Type': 'application/json'
         },
         body:JSON.stringify({
-          title:title,
-          summary:summary,
-          author:author,
+          title:TANGJG.escapeCode(title),
+          summary:TANGJG.escapeCode(summary),
+          author:TANGJG.escapeCode(author),
           articleDate:articleDate,
-          article:article
+          article:TANGJG.escapeCode(article)
         })
       })    
       .then(res=>res.json())

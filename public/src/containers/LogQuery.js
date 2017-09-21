@@ -1,7 +1,8 @@
 import React,{Component} from "react";
 import Pagination from "./Component/Pagination";
 import {Link,Redirect} from "react-router-dom";
-import moment from "moment";
+import ReactEcharts from 'echarts-for-react'; 
+import moment from "moment"; 
 import {DatePicker,DropDownMenu,MenuItem,RaisedButton,Checkbox} from "material-ui";
 import {
   Table,
@@ -15,7 +16,6 @@ import {
  * 查询所有的日志
  */
 export default class LogQuery extends Component{
-  
   constructor(prop){
     super(prop);
     this.state = {
@@ -26,6 +26,9 @@ export default class LogQuery extends Component{
       staff:[],
       staffValue:'choose',
       secret:false,
+      monthShow:false,
+      monthValue:'choose', 
+      monthFormat:'',
     }
   }
 
@@ -123,6 +126,14 @@ export default class LogQuery extends Component{
     this.setState({staffValue:value});
   }
 
+  //选择按月底查询的月份
+  handleMonthChange = (event ,index ,value) => {
+    var date = new Date().getFullYear();
+    this.setState({
+      monthValue:value,
+      monthFormat:date+value
+    });
+  }
   //点击查询按钮
   handleSql = () => {
     let {staffValue,articleDate} = this.state;
@@ -154,6 +165,13 @@ export default class LogQuery extends Component{
     })
   }
 
+  //选择按月度显示
+  updateCheckMouth = (event,check) => {
+    this.setState({
+      monthShow:check
+    }) 
+  }
+
   render(){
     let {dataSource,total,page} = this.state;
     return (
@@ -182,12 +200,37 @@ export default class LogQuery extends Component{
             style={{display:"inline-block",width:150,left:200}}
             className="tang-Checkbox"
           />
+          <Checkbox
+            label="按月显示"
+            checked={this.state.monthShow}
+            onCheck={this.updateCheckMouth}
+            style={{display:"inline-block",width:150,left:200}}
+            className="tang-Checkbox"
+          />
+          <DropDownMenu value={this.state.monthValue} autoWidth={false} style={{width:303,top:16,left:200,display:this.state.monthShow?'inline-block':'none'}} className="tang-DropDownMenu" onChange={this.handleMonthChange}>
+            <MenuItem value={'choose'} primaryText="选择月份" />
+            <MenuItem value={'-01'} primaryText={'一月份'} />
+            <MenuItem value={'-02'} primaryText={'二月份'} />
+            <MenuItem value={'-03'} primaryText={'三月份'} />
+            <MenuItem value={'-04'} primaryText={'四月份'} />
+            <MenuItem value={'-05'} primaryText={'五月份'} />
+            <MenuItem value={'-06'} primaryText={'六月份'} />
+            <MenuItem value={'-07'} primaryText={'七月份'} />
+            <MenuItem value={'-08'} primaryText={'八月份'} />
+            <MenuItem value={'-09'} primaryText={'九月份'} />
+            <MenuItem value={'-10'} primaryText={'十月份'} />
+            <MenuItem value={'-11'} primaryText={'十一月份'} />
+            <MenuItem value={'-12'} primaryText={'十二月份'} />
+          </DropDownMenu>
         </div>
         <div className="tang-SqlBtn">
           <RaisedButton label="重置" primary={true} onClick={this.handleReset}/>
           <RaisedButton label="查询" secondary={true} onClick={this.handleSql}/>
         </div>
         {
+          this.state.monthShow?
+          <Demo value={this.state.monthFormat}/>
+          :
           this.state.secret?
           <Table>
             <TableHeader displaySelectAll={false}>
@@ -204,7 +247,7 @@ export default class LogQuery extends Component{
                       <TableRowColumn>
                         <p>创建时间：{item.logTime}</p>
                         <p>创建人：{item.creater}</p>
-                        <pre>{item.log}</pre>
+                        <pre dangerouslySetInnerHTML={{__html:item.log}}></pre>
                       </TableRowColumn>
                     </TableRow>
                   )
@@ -242,9 +285,145 @@ export default class LogQuery extends Component{
             </TableBody>
           </Table>
         }
-        <Pagination total={total} current={page} pageSize={10} onChange={this.pageChange}/>
+        {
+          this.state.monthShow?'':<Pagination total={total} current={page} pageSize={10} onChange={this.pageChange}/>
+        }
       </div>
     )
   }
 
+}
+
+class Demo extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      option:false,
+      optionData:null,
+    }
+  }
+
+  componentWillMount(){
+    this.handleFetch();
+  }
+
+  componentWillReceiveProps(props){
+    this.setState({
+      option:true,
+      optionData:null
+    },()=>{
+      this.handleFetch(props.value)
+    })
+  }
+
+  handleFetch = (value) =>{
+    fetch(`${TANGJG.HOST}/method/monthQueryLog?value=${value}`,{
+      credentials: 'include',
+      method:'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(res=>res.json())
+    .then(json=>{
+      if(json.code === "S"){
+        this.setState({
+          option:true,
+          optionData:json.data
+        })
+      }else{
+        console.log(json.msg)
+      }
+    })
+    .catch(err=>{
+      TANGJG.loginExpires()
+    })
+  }
+
+  getOption(){
+    return {
+      title : {
+          text: '月份日志统计图',
+          x:'center'
+      },
+      tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            crossStyle: {
+                color: '#999'
+            }
+        }
+      },
+      toolbox: {
+        feature: {
+            dataView: {show: true, readOnly: false},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+      },
+      xAxis: [
+          {
+              type: 'category',
+              axisPointer: {
+                  type: 'shadow'
+              },
+              data:(()=>{
+                var res=[];
+                if(this.state.optionData){
+                  this.state.optionData.map(item=>{
+                    res.push(item.creater)
+                  })
+                }
+                return res;
+              })(),  
+          }
+      ],
+      yAxis: [
+          {
+              type: 'value',
+              name: '日志提交次数',
+              min: 0,
+              max: 40,
+              interval: 5,
+              axisLabel: {
+                  formatter: '{value} '
+              }
+          },
+      ],
+      series: [
+          {
+              name:'日志提交次数',
+              type:'bar',
+              label:{normal:{
+                show: true,
+              }},
+              data:(()=>{
+                var res=[];
+                if(this.state.optionData){
+                  this.state.optionData.map(item=>{
+                    res.push({value:item['COUNT(*)'],name:item.creater})
+                  });
+                }
+                return res;
+              })(),
+          },
+      ]
+    };
+  }
+  render(){
+    return(
+      this.state.option?
+      <div>
+        <ReactEcharts
+          option={this.getOption()}
+          notMerge={true}
+          lazyUpdate={true}
+        />
+      </div>
+      :
+      <div></div>
+    )
+  }
 }

@@ -3,7 +3,6 @@ import Pagination from "./Component/Pagination";
 import {Link,Redirect} from "react-router-dom";
 import moment from "moment";
 import {Tabs, Tab , FontIcon , TextField , DatePicker , RaisedButton , Snackbar , DropDownMenu , MenuItem , Checkbox } from 'material-ui';
-
 /**
  * 发表新的HTML文章
  */
@@ -73,7 +72,7 @@ export default class AddLog extends Component{
         logTime:moment(this.state.articleDate).format("YYYY-MM-DD"),
         creater:this.state.staffValue,
         secret:this.state.secret,
-        log:document.getElementById('logDescribe').value
+        log:TANGJG.escapeCode(document.getElementById('logDescribe').value)
       })
     })
     .then(res=>{return res.json()})

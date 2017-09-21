@@ -21,6 +21,7 @@ export default class NetSatin extends Component{
       open:false,
       page:1,
       noResource:false,
+      handleDel:false,
     };
   }
 
@@ -171,7 +172,17 @@ export default class NetSatin extends Component{
           noResource:true,
         })
       }
-      if(json.code === "S"){
+      if(json.code === "SA"||json.code === "S"){
+        json.data.map((item,i)=>{
+          json.data[i]['content'] = TANGJG.enEscapeCode(item.content);
+          if(json.data[i]['content'].match(/data-original/)){
+            var originSrc = json.data[i]['content'].match(/data-original=".*" title/)[0].replace(/(data-original=)|(title)|(")/g,"");
+            var placeSrc = new RegExp(`http://mstatic.spriteapp.cn/xx/1/w3/img/lazyload/default.png`,"g");
+            json.data[i]['content'] = json.data[i]['content'].replace(placeSrc,originSrc);
+            var placeHref = new RegExp(`href=".{0,50}\.html"`,"g");
+            json.data[i]['content'] = json.data[i]['content'].replace(placeHref,'');
+          }
+        })
         this.setState({
           page:this.state.page+1,
           open:true,
@@ -179,6 +190,11 @@ export default class NetSatin extends Component{
           comment:this.state.comment.concat(json.data),
           setOver:true,
         })
+        if(json.code === "SA"){
+          this.setState({
+            handleDel:true
+          })
+        }
       }else{
         this.setState({
           open:true,
@@ -191,6 +207,47 @@ export default class NetSatin extends Component{
     })
   }
 
+  //删除一个段子
+  handleDeleteSatin(value){
+    if(value){
+      fetch(`${TANGJG.HOST}/method/deleteSatin`,{
+        credentials: 'include',
+        method:'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({value})
+      })
+      .then(res=>res.json())
+      .then(json=>{
+        if(json.code === "S"){
+          var length = this.state.comment.length;
+          var newArr = this.state.comment;
+          while(length--){
+            if(this.state.comment[length].ID === value){
+              newArr.splice(length,1);
+              this.setState({
+                comment:newArr,
+                open:true,
+                error:'删除成功！',
+              })
+              return false;
+            }
+            if(length<0)return;
+          }
+        }else{
+          this.setState({
+            open:true,
+            error:json.msg, 
+          })
+        }
+      })
+      .catch(err=>{
+        TANGJG.loginExpires()
+      })
+    }
+  }
+
   handleRequestClose = () => {
     this.setState({
       open: false,
@@ -198,7 +255,7 @@ export default class NetSatin extends Component{
   }
 
   render(){
-    let {comment,setOver} = this.state;
+    let {comment,setOver,handleDel} = this.state;
     return (
       <div id="NetSatin">
       <Link to='/addNetSatin'><RaisedButton label="我有段子" primary={true} /></Link>
@@ -207,19 +264,20 @@ export default class NetSatin extends Component{
         comment.length>0?
         comment.map((value,v)=>{
           return (
-            <Card zDepth={4} style={{width:750,margin:'50px auto',backgroundColor:'antiquewhite',padding:20}}>
+            <Card zDepth={4} style={{margin:'50px auto',backgroundColor:'antiquewhite',padding:20}}>
               <div style={{border:'1px solid re'}} className="PrivateChat">
-                <div style={{fontSize:16}}>{value.content}</div>
-                {
-                  value.src&&<div  style={{textAlign:'center'}}><img src={'upload/satin/'+value.src} width='200px'/></div>
-                }
+                <div style={{color:'#000',textAlign:'center'}} dangerouslySetInnerHTML={{__html:value.content}}></div>
                 <div style={{textAlign:'center',margin:10,color:'#00BCD4'}}>
                   <FontIcon onClick={this.handleStar.bind(this,value.ID)} style={{cursor:'pointer',color:'#00BCD4'}} className="fa fa-thumbs-o-up"/>
                   <span id={`satin_star_${value.ID}`} data-value={value.star}>({this.state[`satin_star_${value.ID}`]?this.state[`satin_star_${value.ID}`]:value.star})</span>
                   <span style={{margin:20}}></span>
                   <FontIcon onClick={this.handleShit.bind(this,value.ID)} style={{cursor:'pointer',color:'#00BCD4'}} className="fa fa-thumbs-o-down"/>
                   <span id={`satin_shit_${value.ID}`} data-value={value.shit}>({this.state[`satin_shit_${value.ID}`]?this.state[`satin_shit_${value.ID}`]:value.shit})</span>
-                </div>
+                  <span style={{margin:20}}></span>
+                  {
+                    handleDel?<FontIcon onClick={this.handleDeleteSatin.bind(this,value.ID)} style={{cursor:'pointer',color:'#e4393c'}} className="fa fa-trash"/>:''
+                  }
+                  </div>
               </div>
             </Card>
           )

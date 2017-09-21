@@ -495,6 +495,32 @@ router.get('/method/deleteJsArticle',(req,res)=>{
 })
 
 /**
+ * 检索发表过的文章的内容
+ */
+router.post('/method/searchQueryJsArticle',(req,res)=>{
+  let context = req.body.context;
+  let page = req.body.page;
+  db.query(`SELECT COUNT(ID) AS total FROM article_js WHERE article LIKE '%${context}%'`,(error,data1)=>{
+    if(error){
+      res.send(JSON.stringify({code:'E',msg:error}));
+      res.end();
+      return false;
+    }else{
+      db.query(`SELECT ID,title,summary,author,articleDate FROM article_js WHERE article LIKE '%${context}%' ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
+        if(error){
+          res.send(JSON.stringify({code:'E',msg:error}));
+          res.end();
+          return false;
+        }else{
+          res.send(JSON.stringify({code:"S",data:data2,total:data1[0].total}));
+          return false;
+        }
+      })
+    }
+  })
+})
+
+/**
  * 新建日志选择创建人
  */
 router.get('/method/getStaff',(req,res)=>{
@@ -582,6 +608,24 @@ router.post('/method/queryLog',(req,res)=>{
 })
 
 /**
+ * 按月份汇总员工的日志
+ */
+router.get('/method/monthQueryLog',(req,res)=>{
+  var value = req.query.value;
+  if(value){
+    db.query(`SELECT creater,COUNT(*) FROM log_table WHERE logTime LIKE '${value}%' GROUP BY creater`,(error,data)=>{
+      if(error){
+        res.send(JSON.stringify({code:"E",msg:error}));
+        res.end()
+      }else{
+        res.send(JSON.stringify({code:'S',data:data}));
+        res.end()
+      }
+    })
+  }
+})
+
+/**
  * 通过ID删除一篇日志
  */
 router.get('/method/deleteLog',(req,res)=>{
@@ -603,7 +647,13 @@ router.get('/method/deleteLog',(req,res)=>{
  * 登入界面快速链接跳转获取所有的子模块
  */
 router.get('/method/queryAllSubItem',(req,res)=>{
-  db.query(`SELECT * FROM sub_menu_item`,(error,data)=>{
+  var sqlString = '';
+  if(req.session.user === 'admin'){
+    sqlString = `SELECT * FROM sub_menu_item`;
+  }else{
+    sqlString = `SELECT * FROM sub_menu_item WHERE parent!='系统管理'`;
+  }
+  db.query(sqlString,(error,data)=>{
     if(error){
       res.send(JSON.stringify({code:"E",msg:error}));
       return false;
@@ -975,10 +1025,30 @@ router.get('/method/requestAgainSatin',(req,res)=>{
     db.query(`SELECT ID,content,src,star,shit FROM net_satin ORDER BY ID DESC LIMIT ${(page-1)*10},10`,(error,data2)=>{
       if(error){
         res.send(JSON.stringify({code:'E',msg:error}));
-        return false;
       }else{
-        res.send(JSON.stringify({code:"S",data:data2}));
-        return false;
+        if(req.session.user === 'admin'){
+          res.send(JSON.stringify({code:"SA",data:data2}));
+        }else{
+          res.send(JSON.stringify({code:"S",data:data2}));
+        }
+      }
+    })
+  }
+})
+
+/**
+ * 删除一个段子
+ */
+router.post('/method/deleteSatin',(req,res)=>{
+  let value = req.body.value;
+  if(req.session.user!=='admin'){
+    res.send(JSON.stringify({code:'E',msg:'你没有足够的权限删除'}));
+  }else{
+    db.query(`DELETE FROM net_satin WHERE ID=${value}`,(error,data2)=>{
+      if(error){
+        res.send(JSON.stringify({code:'E',msg:error}));
+      }else{
+        res.send(JSON.stringify({code:"S"}));
       }
     })
   }
@@ -989,7 +1059,7 @@ router.get('/method/requestAgainSatin',(req,res)=>{
  */
 router.post('/method/upLoadTeamPicture',function(req,res) {
   var newName = path.parse(req.files[0].originalname).ext;
-  fs.rename(path.join(__dirname,"../blic/upload",req.files[0].filename),path.join(__dirname,"../public/upload/teamBuild",req.files[0].filename+newName),(err)=>{
+  fs.rename(path.join(__dirname,"../public/upload",req.files[0].filename),path.join(__dirname,"../public/upload/teamBuild",req.files[0].filename+newName),(err)=>{
     if(err){
       res.send(JSON.stringify({code:'E',msg:err}));
       return false;
@@ -1091,22 +1161,24 @@ router.post('/method/joinTeamBuild',(req,res)=>{
 /**
  * 执行爬虫获取网页内容
  */
-router.get('/method/startSpider',(req,res)=>{
+router.get('/method/startSpiderText',(req,res)=>{
+  /**
+   * 抓取百思不得姐的文字段子
+   */
   request('http://www.budejie.com/text/',(error,response,body)=>{
     if(!error && response.statusCode == 200){
       var JQ = cheerio.load(body);
       var content = JQ('.j-r-list-c-desc');
       var length = content.length;
-      var contentTime = JQ('.u-time');
       var index = 0;
       async.each(content,function(item, callback) {
         var i = index++;
         var text = (JQ('.j-r-list-c-desc').eq(i).text()).trim();
-        var time = (JQ('.u-time').eq(i).text()).trim();
+        var time = (JQ('.u-time').eq(i).text()).trim()+'text';
         db.query(`SELECT * FROM net_satin WHERE time='${time}'`,(error,data)=>{
           callback(error)
           if(data.length == 0){
-            db.query(`INSERT INTO net_satin (content,author,time) VALUES ('${text}','${req.session.user}','${time}')`,function(error, tags, fields){
+            db.query(`INSERT INTO net_satin (content,author,time) VALUES ('${text}','budejie','${time}')`,function(error, tags, fields){
               if(error){
                 callback(error)
                 return false;
@@ -1124,5 +1196,39 @@ router.get('/method/startSpider',(req,res)=>{
     }
   })
 })
-
+router.get('/method/startSpiderPic',(req,res)=>{
+  /**
+   * 抓取百思不得姐的图片段子
+   */
+  request('http://www.budejie.com/pic/',(error,response,body)=>{
+    if(!error && response.statusCode == 200){
+      var JQ = cheerio.load(body);
+      var content = JQ('.j-r-list-c');
+      var length = content.length;
+      var index = 0;
+      async.each(content,function(item, callback) {
+        var i = index++;
+        var html = escapeCode((JQ('.j-r-list-c').eq(i).html()).trim());
+        var time = (JQ('.u-time').eq(i).text()).trim()+'pic';
+        db.query(`SELECT * FROM net_satin WHERE time='${time}'`,(error,data)=>{
+          callback(error)
+          if(data.length == 0){
+            db.query(`INSERT INTO net_satin (content,author,time) VALUES ('${html}','budejie','${time}')`,function(error, tags, fields){
+              if(error){
+                callback(error)
+                return false;
+              }
+            })
+          }
+        })
+      }, function(error,i) {
+        if(error){
+          res.end(JSON.stringify({code:'E',msg:error}));
+          return false;
+        }
+        res.end(JSON.stringify({code:'S'}));
+      });
+    }
+  })
+})
 module.exports = router;

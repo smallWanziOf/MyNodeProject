@@ -13,6 +13,9 @@ li {
   padding: 0;
   margin: 0;
 }
+#editor div {
+  z-index: 1 !important;
+}
 #Header {
   position: fixed;
   top: 0;
@@ -20,13 +23,22 @@ li {
   left: 0;
   z-index: 1000;
 }
+#Header div {
+  color: #fff !important;
+}
 #Header .tang-header-drawer {
   z-index: 1 !important;
-  padding-top: 64px;
   overflow: hidden !important;
+  background-color: #333 !important;
+  width: 210px !important;
+  padding: 8px 15px;
+  padding-top: 64px;
+}
+#Header .tang-header-drawer div {
+  display: inline-block;
 }
 #Header .tang-sub-item {
-  padding-left: 60px !important;
+  padding-left: 30px !important;
 }
 #Header .tang-reast-a {
   display: block;
@@ -151,6 +163,58 @@ li {
 }
 #StartSchedule table > thead > tr > th:first-child {
   display: none;
+}
+#ReadeArticle {
+  /* table 样式 */
+  /* blockquote 样式 */
+  /* code 样式 */
+  /* ul ol 样式 */
+  /* img 图片大小*/
+}
+#ReadeArticle table {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+}
+#ReadeArticle table td,
+#ReadeArticle table th {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px 5px;
+}
+#ReadeArticle table th {
+  border-bottom: 2px solid #ccc;
+  text-align: center;
+}
+#ReadeArticle blockquote {
+  display: block;
+  border-left: 8px solid #d0e5f2;
+  padding: 5px 10px;
+  margin: 10px 0;
+  line-height: 1.4;
+  font-size: 100%;
+  background-color: #f1f1f1;
+}
+#ReadeArticle code {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  background-color: #f1f1f1;
+  border-radius: 3px;
+  padding: 3px 5px;
+  margin: 0 3px;
+}
+#ReadeArticle pre code {
+  display: block;
+}
+#ReadeArticle ul,
+#ReadeArticle ol {
+  margin: 10px 0 10px 20px;
+}
+#ReadeArticle img {
+  max-width: 800px !important;
+}
+#NetSatin a {
+  color: #000;
 }
 
 /*# sourceMappingURL=style.css.map*/

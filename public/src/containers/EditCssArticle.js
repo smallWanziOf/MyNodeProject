@@ -105,11 +105,11 @@ export default class EditCssArticle extends Component{
           'Content-Type': 'application/json'
         },
         body:JSON.stringify({
-          title:title,
-          summary:summary,
-          author:author,
+          title:TANGJG.escapeCode(title),
+          summary:TANGJG.escapeCode(summary),
+          author:TANGJG.escapeCode(author),
           articleDate:articleDate,
-          article:article
+          article:TANGJG.escapeCode(article)
         })
       })    
       .then(res=>res.json())
@@ -181,7 +181,7 @@ export default class EditCssArticle extends Component{
               id="article"
             /><br />
             <div style={{textAlign:'right',margin:'10px 10px 0 0'}}>
-              <Link to='/manageHtml'><RaisedButton label="取消" primary={true} onTouchTap={this.textFieldCancle}/></Link>
+              <Link to='/manageCss'><RaisedButton label="取消" primary={true} onTouchTap={this.textFieldCancle}/></Link>
               <RaisedButton label="确定" secondary={true} onTouchTap={this.textFieldChange} style={{marginLeft:20}}/>
             </div>
             <Snackbar

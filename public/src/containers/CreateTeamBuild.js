@@ -144,11 +144,11 @@ export default class CreateTeamBuild extends Component{
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        teamAddress:teamAddress,
-        teamSubAddress:teamSubAddress,
-        teamPictureDesc:teamPictureDesc,
-        teamPictureSubDesc:teamPictureSubDesc,
-        teamReason:teamReason,
+        teamAddress:TANGJG.escapeCode(teamAddress),
+        teamSubAddress:TANGJG.escapeCode(teamSubAddress),
+        teamPictureDesc:TANGJG.escapeCode(teamPictureDesc),
+        teamPictureSubDesc:TANGJG.escapeCode(teamPictureSubDesc),
+        teamReason:TANGJG.escapeCode(teamReason),
         path:this.state.path,
         time:moment(this.state.articleDate).format("YYYY-MM-DD HH:mm:ss")
       })
