@@ -4,6 +4,8 @@
 1.卸载不想要的软件sudo apt-get remove --purge google-chrome-unstable（--purge 选项表示彻底删除改软件和相关文件）
 2.删除文件夹sudo rm -rf [filename]
 3.删除文件sudo rm -f [filename]
+4.复制一个文件sudo cp -r /目标文件路径 /复制到的路径（ -r 递归复制 ）
+5.当文件不能编辑或者无法移动修改文件权限 sudo chomd 777 /[filename] （‘*’设置所有的文件权限）
 
 ##root
 1.设置root密码sudo passwd
@@ -72,6 +74,130 @@
    status     显示工作区状态
    tag        创建、列出、删除或校验一个 GPG 签名的标签对象
 2.clone一个仓库之前需要git init一次进行初始化否则pull不下来
+
+##ftp服务器搭建
+1.sudo apt install vsftpd
+2.vim /etc/vsftpd.conf #修改vsftpd的相关配置（http://blog.csdn.net/lj402159806/article/details/78209103）
+#创建ftp用户
+3.mkdir /home/ftpuser
+sudo useradd ftpuser -g ftpgroup -d /home/ftpuser -m
+sudo passwd ftpuser
+mkdir /home/ftpuser/ftp
+chmod 777 -R /home/username/ftp
+usermod -s /sbin/nologin ftpuser
+#启动或者重载nginx
+systemctl start vsftpd 或 service vsftpd start
+systemctl restart vsftpd 或 service vsftpd restart
+#配置文件
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_disable "msie6";
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	# gzip_buffers 16 8k;
+	# gzip_http_version 1.1;
+	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+	#include /etc/nginx/conf.d/*.conf;
+	#include /etc/nginx/sites-enabled/*;
+
+
+        server {
+		listen       8010;
+		server_name  192.168.192.128;
+
+		#charset koi8-r;
+
+		#access_log  logs/host.access.log  main;
+
+		location / {
+		    root   /var/www/html;
+		    index  index.html index.htm;
+		    try_files $uri /index.html;
+		}
+
+		#error_page  404              /404.html;
+
+		# redirect server error pages to the static page /50x.html
+		#
+		error_page   500 502 503 504  /50x.html;
+		location = /50x.html {
+		    root   html;
+		}
+	}
+}
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+# 
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
 
 ##网络
 1.需要在该虚拟机的网络配置中修改桥接模式（默认的是NAT模式共享主机的网络）
